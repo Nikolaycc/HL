@@ -22,6 +22,8 @@ int main(void) {
     HL http;
     HL_Default(&http);
 
+    HL_CreateServer(&http, "127.0.0.1", 8000);
+    
     int ind = HL_Register_Callback(&http, (callback_void_t)hello);
     int ind2 = HL_Register_Callback(&http, (callback_void_t)hello2);
     int ind3 = HL_Register_Callback(&http, (callback_void_t)hello3);
@@ -32,9 +34,9 @@ int main(void) {
 
     log("Hello World");
     
-    printf("%d, %d, %d\n", http.sfd, HL_CreateServer(&http, "127.0.0.1", 8000), ind);
+    printf("%d, %d\n", http.sfd, ind);
 
     //panic("not bound a[1]");
     
-    return 0;
+    exit(EXIT_SUCCESS);
 }

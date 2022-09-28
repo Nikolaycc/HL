@@ -8,6 +8,7 @@
 #include <string.h>	// strlen
 #include <sys/socket.h> // socket 
 #include <arpa/inet.h> // ip family
+#include <netinet/in.h> // inet_aton
 #include <unistd.h> // mem
 #include "../lib/strmap.h" // sm
 
@@ -55,7 +56,7 @@ int HL_Post(HL* h, char* route, void (callback)()); // Post Method (stuct hl*, c
 int HL_Delete(HL* h, char* route, void (callback)()); // Delete Method (stuct hl*, char* Route, void Callback)
 int HL_Put(HL* h, char* route, void (callback)()); // Put Method (stuct hl*, char* Route, void Callback)
 
-// Callback Funcs
-int HL_Register_Callback(HL* h, callback_void_t clptr);
+// Register Callback Funcs
+int HL_Register_Callback(HL* h, callback_void_t clptr); // Register CallBack (struct hl*, void Callback) |> return Index[CALLback]
 
 #endif
