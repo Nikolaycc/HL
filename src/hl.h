@@ -24,7 +24,8 @@
 #define HL_Get_Callback(h, e, T) ((T)h[e]) // GET CALLBACK (h.callback_func_ptrs, int index, type)
 
 #define MAX_ROUTES 125
-#define MAX_SIZE 257 
+#define MAX_SIZE 257
+#define MAX_BUFFER_SIZE 1025
 
 // err | ok 
 #define ERR 1
@@ -39,6 +40,9 @@ typedef void (*callback_void_t)(void);
 // HL struct 
 typedef struct {
     int sfd;
+    int cfd;
+    int lsnb;
+    char buffer[MAX_BUFFER_SIZE];
     struct sockaddr_in ser;
     socklen_t ser_len;
     StrMap *routes;
@@ -48,7 +52,7 @@ typedef struct {
 // Server Funcs
 void HL_Default(HL* h);
 int HL_CreateServer(HL* h, char* ip, int port); // Create Server (struct hl*, char* ip, int port)
-int HL_Listen(HL* h); // Listen Requests
+void HL_Listen(HL* h); // Listen Requests
 
 // Route Methods Funcs
 int HL_Get(HL* h, char* route, void (callback)()); // Get Method (stuct hl*, char* Route, void Callback)
@@ -56,7 +60,13 @@ int HL_Post(HL* h, char* route, void (callback)()); // Post Method (stuct hl*, c
 int HL_Delete(HL* h, char* route, void (callback)()); // Delete Method (stuct hl*, char* Route, void Callback)
 int HL_Put(HL* h, char* route, void (callback)()); // Put Method (stuct hl*, char* Route, void Callback)
 
+int HL_Parse_Req(); // { PrivateFuncs }
+int HL_Parse_Res(); // { PrivateFuncs }
+int HL_Parse_Data(); // { PrivateFuncs }
+
+void HL_free(HL* h);
+
 // Register Callback Funcs
-int HL_Register_Callback(HL* h, callback_void_t clptr); // Register CallBack (struct hl*, void Callback) |> return Index[CALLback]
+int HL_Register_Callback(HL* h, callback_void_t clptr); // Register CallBack (struct hl*, void Callback) return Index[CALLback] { PrivateFuncs }
 
 #endif

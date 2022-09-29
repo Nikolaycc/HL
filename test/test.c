@@ -3,18 +3,15 @@
 #include <stdio.h>
 
 void hello() {
-    int a = 10 + 2 + 56;
-    printf("HELLO, WORLD! %d\n", a);
+    log("Hello 1");
 }
 
 void hello2() {
-    int a = 10 + 22 + 56;
-    printf("HELLO! %d\n", a);
+    log("Hello 2");
 }
 
 void hello3() {
-    int a = 10 + 6 + 56;
-    printf("WORLD! %d\n", a);
+    log("Hello 3");
 }
 
 int main(void) {
@@ -28,15 +25,16 @@ int main(void) {
     int ind2 = HL_Register_Callback(&http, (callback_void_t)hello2);
     int ind3 = HL_Register_Callback(&http, (callback_void_t)hello3);
 
+    //HL_Get(&http, "/user", exmp);x
+
     HL_Get_Callback(http.callback_func_ptrs, ind, callback_void_t)();
     HL_Get_Callback(http.callback_func_ptrs, ind2, callback_void_t)();
     HL_Get_Callback(http.callback_func_ptrs, ind3, callback_void_t)();
 
     log("Hello World");
-    
-    printf("%d, %d\n", http.sfd, ind);
 
-    //panic("not bound a[1]");
+    HL_Listen(&http);
+    //HL_free(&http);
     
     exit(EXIT_SUCCESS);
 }
