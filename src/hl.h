@@ -48,12 +48,12 @@ struct Header {
 };
 
 typedef struct {
-    Header h;
+    struct Header h;
     char* body;
 } Req;
 
 typedef struct {
-    Header h;
+    struct Header h;
     char* body;
 } Res;
 
