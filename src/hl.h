@@ -10,15 +10,20 @@
 #include <arpa/inet.h> // ip family
 #include <netinet/in.h> // inet_aton
 #include <unistd.h> // mem
+#include <time.h> // time
 #include "../lib/strmap.h" // sm
 
 #define panic(_msg_) { \
-    fprintf(stderr, "panic: [%s] (%s:%d)\n    ->\t %s\n", __TIME__, __FILE__, __LINE__, (_msg_)); \
+    time_t t = time(NULL); \
+    struct tm tm = *localtime(&t); \
+    fprintf(stderr, "panic: [%02d:%02d:%02d] (%s:%d)\n    ->\t %s\n", tm.tm_hour, tm.tm_min, tm.tm_sec, __FILE__, __LINE__, (_msg_)); \
     exit(1); \
 }
 
 #define log(_msg_) {\
-    fprintf(stdout, "log: [%s] (%s:%d)\n    ->\t %s\n", __TIME__, __FILE__, __LINE__, (_msg_)); \
+    time_t t = time(NULL); \
+    struct tm tm = *localtime(&t); \
+    fprintf(stdout, "log: [%02d:%02d:%02d] (%s:%d)\n    ->\t %s\n", tm.tm_hour, tm.tm_min, tm.tm_sec, __FILE__, __LINE__, (_msg_)); \
 }
 
 #define HL_Get_Callback(h, e, T) ((T)h[e]) // GET CALLBACK (h.callback_func_ptrs, int index, type)
@@ -26,6 +31,7 @@
 #define MAX_ROUTES 125
 #define MAX_SIZE 257
 #define MAX_BUFFER_SIZE 1025
+#define MAX_HEAD 55
 
 // err | ok 
 #define ERR 1
@@ -36,6 +42,20 @@ static int clindex = 0;
 
 // Callback ptr type
 typedef void (*callback_void_t)(void);
+
+struct Header {
+    char* head[MAX_HEAD];
+};
+
+typedef struct {
+    Header h;
+    char* body;
+} Req;
+
+typedef struct {
+    Header h;
+    char* body;
+} Res;
 
 // HL struct 
 typedef struct {
