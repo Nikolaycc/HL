@@ -28,14 +28,14 @@
     fprintf(stdout, "log: [%02d:%02d:%02d] (%s:%d)\n    ->\t %s\n", tm.tm_hour, tm.tm_min, tm.tm_sec, __FILE__, __LINE__, (_msg_)); \
 }
 
-#define HL_Get_Callback(h, e, T) ((T)h[e]) // GET CALLBACK (h.callback_func_ptrs, int index, type)
+#define HL_Get_Callback(h, e) ((callback_res_t)h[e]) // GET CALLBACK (h.callback_func_ptrs, int index, type)
 
 #define MAX_ROUTES 125
 #define MAX_SIZE 257
 #define MAX_BUFFER_SIZE 1025
 #define MAX_HEAD 55
 
-// err | ok 
+// err - ok 
 #define ERR 1
 #define OK 0
 
@@ -63,23 +63,23 @@ typedef struct {
     struct sockaddr_in ser;
     socklen_t ser_len;
     StrMap *routes;
-    callback_res_t callback_func_ptrs[MAX_ROUTES];
+    callback_res_t cl[MAX_ROUTES];
 } HL;
 
 // Server Funcs
 void HL_Default(HL* h);
-int HL_CreateServer(HL* h, char* ip, int port); // Create Server (struct hl*, char* ip, int port)
+int HL_CreateServer(HL* h, const char* ip, int port); // Create Server (struct hl*, char* ip, int port)
 void HL_Listen(HL* h); // Listen Requests
 
 // Route Methods Funcs
-int HL_Get(HL* h, char* route, void (callback)()); // Get Method (stuct hl*, char* Route, void Callback)
-int HL_Post(HL* h, char* route, void (callback)()); // Post Method (stuct hl*, char* Route, void Callback)
-int HL_Delete(HL* h, char* route, void (callback)()); // Delete Method (stuct hl*, char* Route, void Callback)
-int HL_Put(HL* h, char* route, void (callback)()); // Put Method (stuct hl*, char* Route, void Callback)
+int HL_Get(HL* h, const char* route, Res (callback)()); // Get Method (stuct hl*, char* Route, Res Callback)
+int HL_Post(HL* h, const char* route, Res (callback)()); // Post Method (stuct hl*, char* Route, Res Callback)
+int HL_Delete(HL* h, const char* route, Res (callback)()); // Delete Method (stuct hl*, char* Route, Res Callback)
+int HL_Put(HL* h, const char* route, Res (callback)()); // Put Method (stuct hl*, char* Route, Res Callback)
 
 int HL_Parse_Req(); // { PrivateFuncs }
 int HL_Parse_Res(); // { PrivateFuncs }
-int HL_Parse_Data(); // { PrivateFuncs }
+int HL_Parse_Body(); // { PrivateFuncs }
 
 void HL_free(HL* h);
 
