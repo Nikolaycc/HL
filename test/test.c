@@ -21,19 +21,20 @@ int main(void) {
 
     HL_CreateServer(&http, "127.0.0.1", 8000);
     
-    int ind = HL_Register_Callback(&http, (callback_void_t)hello);
-    int ind2 = HL_Register_Callback(&http, (callback_void_t)hello2);
-    int ind3 = HL_Register_Callback(&http, (callback_void_t)hello3);
+    int ind = HL_Register_Callback(&http, (callback_res_t)hello);
+    int ind2 = HL_Register_Callback(&http, (callback_res_t)hello2);
+    int ind3 = HL_Register_Callback(&http, (callback_res_t)hello3);
 
     //HL_Get(&http, "/user", exmp);x
 
-    HL_Get_Callback(http.callback_func_ptrs, ind, callback_void_t)();
-    HL_Get_Callback(http.callback_func_ptrs, ind2, callback_void_t)();
-    HL_Get_Callback(http.callback_func_ptrs, ind3, callback_void_t)();
+    HL_Get_Callback(http.callback_func_ptrs, ind, callback_res_t)();
+    HL_Get_Callback(http.callback_func_ptrs, ind2, callback_res_t)();
+    HL_Get_Callback(http.callback_func_ptrs, ind3, callback_res_t)();
 
     log("Hello World");
 
     HL_Listen(&http);
+    
     //HL_free(&http);
     
     exit(EXIT_SUCCESS);

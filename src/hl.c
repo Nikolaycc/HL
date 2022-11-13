@@ -1,4 +1,4 @@
- #include "hl.h"
+#include "hl.h"
 
 void HL_Default(HL* h) {
     h->sfd = 2;
@@ -80,7 +80,7 @@ void HL_free(HL* h) {
     close(h->cfd);
 }
 
-int HL_Register_Callback(HL* h, callback_void_t clptr) {
+int HL_Register_Callback(HL* h, callback_res_t clptr) {
     int indx = clindex;
     h->callback_func_ptrs[clindex] = clptr;
     if (h->callback_func_ptrs[clindex] == NULL)

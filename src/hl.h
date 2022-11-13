@@ -1,6 +1,8 @@
 #ifndef HL_H
 #define HL_H
 
+#pragma once
+
 // include std libs
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,22 +42,17 @@
 // callback store index
 static int clindex = 0;
 
-// Callback ptr type
-typedef void (*callback_void_t)(void);
-
-struct Header {
-    char* head[MAX_HEAD];
-};
-
 typedef struct {
-    struct Header h;
     char* body;
 } Req;
 
 typedef struct {
-    struct Header h;
-    char* body;
+    size_t status;
+    char* res;
 } Res;
+
+// Callback ptr type
+typedef Res (*callback_res_t)(void);
 
 // HL struct 
 typedef struct {
@@ -66,7 +63,7 @@ typedef struct {
     struct sockaddr_in ser;
     socklen_t ser_len;
     StrMap *routes;
-    callback_void_t callback_func_ptrs[MAX_ROUTES];
+    callback_res_t callback_func_ptrs[MAX_ROUTES];
 } HL;
 
 // Server Funcs
@@ -87,6 +84,6 @@ int HL_Parse_Data(); // { PrivateFuncs }
 void HL_free(HL* h);
 
 // Register Callback Funcs
-int HL_Register_Callback(HL* h, callback_void_t clptr); // Register CallBack (struct hl*, void Callback) return Index[CALLback] { PrivateFuncs }
+int HL_Register_Callback(HL* h, callback_res_t clptr); // Register CallBack (struct hl*, void Callback) return Index[CALLback] { PrivateFuncs }
 
 #endif
