@@ -14,28 +14,34 @@ void hello3() {
     log("Hello 3");
 }
 
+Res Index() {
+    return (Res){200, "Hello, World!"};
+}
+
 int main(void) {
+    HL app;
+    HL_Default(&app);
 
-    HL http;
-    HL_Default(&http);
-
-    HL_CreateServer(&http, "127.0.0.1", 8000);
+    HL_CreateServer(&app, "127.0.0.1", 8000);
     
-    int ind = HL_Register_Callback(&http, (callback_res_t)hello);
-    int ind2 = HL_Register_Callback(&http, (callback_res_t)hello2);
-    int ind3 = HL_Register_Callback(&http, (callback_res_t)hello3);
+    int ind = HL_Register_Callback(&app, Index);
+    int ind2 = HL_Register_Callback(&app, (callback_res_t)hello2);
+    int ind3 = HL_Register_Callback(&app, (callback_res_t)hello3);
 
-    //HL_Get(&http, "/user", exmp);x
+    //HL_Get(&app, "/user", exmp);
 
-    HL_Get_Callback(http.callback_func_ptrs, ind, callback_res_t)();
-    HL_Get_Callback(http.callback_func_ptrs, ind2, callback_res_t)();
-    HL_Get_Callback(http.callback_func_ptrs, ind3, callback_res_t)();
+    Res res1 = HL_Get_Callback(app.cl, ind)();
+    Res res2 = HL_Get_Callback(app.cl, ind2)();
+    Res res3 = HL_Get_Callback(app.cl, ind3)();
 
-    log("Hello World");
+    log(res1.res);
 
-    HL_Listen(&http);
-    
-    //HL_free(&http);
+    log(res2.res); // NULL
+    log(res3.res); // NULL
+
+    HL_Listen(&app);
+
+    //HL_free(&app);
     
     exit(EXIT_SUCCESS);
 }
