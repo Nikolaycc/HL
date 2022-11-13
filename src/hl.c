@@ -8,7 +8,7 @@ void HL_Default(HL* h) {
        panic("routes == NULL");
 }
 
-int HL_CreateServer(HL* h, char* ip, int port) {
+int HL_CreateServer(HL* h, const char* ip, int port) {
     struct sockaddr_in socktmp = {0};
     socktmp.sin_family = AF_INET;
     socktmp.sin_port = htons(port);
@@ -26,19 +26,19 @@ int HL_CreateServer(HL* h, char* ip, int port) {
     return OK;
 }
 
-int HL_Get(HL* h, char* route, void (callback)()) {
+int HL_Get(HL* h, const char* route, Res (callback)()) {
     return OK;
 }
 
-int HL_Post(HL* h, char* route, void (callback)()) {
+int HL_Post(HL* h, const char* route, Res (callback)()) {
     return OK;
 }
 
-int HL_Delete(HL* h, char* route, void (callback)()) {
+int HL_Delete(HL* h, const char* route, Res (callback)()) {
     return OK;
 }
 
-int HL_Put(HL* h, char* route, void (callback)()) {
+int HL_Put(HL* h, const char* route, Res (callback)()) {
     return OK;
 }
 
@@ -78,12 +78,13 @@ void HL_Listen(HL* h) {
 void HL_free(HL* h) {
     close(h->sfd);
     close(h->cfd);
+    free(h);
 }
 
 int HL_Register_Callback(HL* h, callback_res_t clptr) {
     int indx = clindex;
-    h->callback_func_ptrs[clindex] = clptr;
-    if (h->callback_func_ptrs[clindex] == NULL)
+    h->cl[clindex] = clptr;
+    if (h->cl[clindex] == NULL)
        panic("callback == NULL");
     clindex += 1;
 
