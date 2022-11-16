@@ -8,7 +8,7 @@ void HL_Default(HL* h) {
        panic("routes == NULL");
 }
 
-int HL_CreateServer(HL* h, const char* ip, int port) {
+Result HL_CreateServer(HL* h, const char* ip, int port) {
     struct sockaddr_in socktmp = {0};
     socktmp.sin_family = AF_INET;
     socktmp.sin_port = htons(port);
@@ -23,23 +23,27 @@ int HL_CreateServer(HL* h, const char* ip, int port) {
        panic("| [NULL] Bind Error");
 
     h->ser = socktmp;
-    return OK;
+    return Ok;
 }
 
-int HL_Get(HL* h, const char* route, Res (callback)()) {
-    return OK;
+Result HL_Get(HL* h, const char* route, Res (callback)()) {
+    int i = HL_Register_Callback(h, callback);
+    log(HL_Format("REGISTER GET METHOD route: %s index: %d", route, i));
+    sm_put(h->routes, route, HL_Format("%d", i));
+
+    return Ok;
 }
 
-int HL_Post(HL* h, const char* route, Res (callback)()) {
-    return OK;
+Result HL_Post(HL* h, const char* route, Res (callback)()) {
+    return Ok;
 }
 
-int HL_Delete(HL* h, const char* route, Res (callback)()) {
-    return OK;
+Result HL_Delete(HL* h, const char* route, Res (callback)()) {
+    return Ok;
 }
 
-int HL_Put(HL* h, const char* route, Res (callback)()) {
-    return OK;
+Result HL_Put(HL* h, const char* route, Res (callback)()) {
+    return Ok;
 }
 
 void HL_Listen(HL* h) {
@@ -53,7 +57,7 @@ void HL_Listen(HL* h) {
     h->lsnb = 1;
     
     while(h->lsnb) {
-        log("+++++++ Waiting for new connection ++++++++\n\n");
+        log("(Waiting for new connection..)");
 
         if ((h->cfd = accept(h->sfd, NULL, NULL))<0)
         {
@@ -63,8 +67,9 @@ void HL_Listen(HL* h) {
         int rtmp = recv(h->cfd, h->buffer, MAX_BUFFER_SIZE, 0);
 
         if (rtmp > 0 ) {
-            printf("START\n%s\nEND\n", h->buffer);
-            char* exm = "<h1>Hello, World!</h1>";
+            log(HL_Format("(Req) %s\n", h->buffer));
+            char* exm = HL_Format("HTTP/1.1 200 ok\nContent-Type: text/html\nContent-Length: 20\n\n<h1>Hello, World</h1>");
+            log(HL_Format("(Res) %s\n", exm));
             send(h->cfd, exm, strlen(exm), 0);
         }
         else if (rtmp == 0) {
@@ -89,4 +94,25 @@ int HL_Register_Callback(HL* h, callback_res_t clptr) {
     clindex += 1;
 
     return indx;
+}
+
+callback_res_t HL_Get_Callback(HL h, int e) { return (callback_res_t)h.cl[e]; }
+
+char* HL_Format(const char *text, ...)
+{
+    static char buffers[MAX_TEXTFORMAT_BUFFERS][MAX_TEXT_BUFFER_LENGTH] = { 0 };
+    static int index = 0;
+
+    char *currentBuffer = buffers[index];
+    memset(currentBuffer, 0, MAX_TEXT_BUFFER_LENGTH);
+
+    va_list args;
+    va_start(args, text);
+    vsnprintf(currentBuffer, MAX_TEXT_BUFFER_LENGTH, text, args);
+    va_end(args);
+
+    index += 1;
+    if (index >= MAX_TEXTFORMAT_BUFFERS) index = 0;
+
+    return currentBuffer;
 }
