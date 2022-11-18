@@ -10,5 +10,9 @@ test: test/test.c
 build: test/test.c
 	${CC} test/test.c src/hl.c lib/strmap.c -o build/hlib
 
+debug: test/test.c
+	${CC} -g test/test.c src/hl.c lib/strmap.c -o build/hlib
+	gdb ./build/hlib
+
 clean:
 	rm -rfv build/*

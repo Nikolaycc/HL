@@ -1,0 +1,11 @@
+# Request 
+
+(METHOD) /(ROUTE) HTTP/(VERSION)
+Host: (URL)
+Accept-Language: (LANG)
+
+
+# Response
+
+HTTP/(VERSION) (STATUSCODE)
+Content-Type: text/html

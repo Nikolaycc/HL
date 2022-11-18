@@ -3,20 +3,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void hello() {
-    log("Hello 1");
+// Res hello(Req r) {
+//     log("Hello 1");
+//     return (Res){404, "<h1>Not Found!</h1>"};
+// }
+
+// Res hello2(Req r) {
+//     log("Hello 2");
+//     return (Res){500, "<h1>Server Error!</h1>"};
+// }
+
+// Res hello3(Req r) {
+//     log("Hello 3");
+//     return (Res){403, "<h1>u dont have perm!</h1>"};
+// }
+
+Res Index(Req r) {
+    return (Res){200, HL_Format("<h1>Method: %s</h1>", r.method)};
 }
 
-void hello2() {
-    log("Hello 2");
-}
-
-void hello3() {
-    log("Hello 3");
-}
-
-Res Index() {
-    return (Res){200, "Hello, World!"};
+Res Route(Req r) {
+    return (Res){200, HL_Format("<h1>where are im?: %s</h1>", r.route)};
 }
 
 int main(void) {
@@ -25,44 +32,41 @@ int main(void) {
 
     HL_CreateServer(&app, "127.0.0.1", 8000);
     
-    int ind = HL_Register_Callback(&app, Index);
-    int ind2 = HL_Register_Callback(&app, (callback_res_t)hello2);
-    int ind3 = HL_Register_Callback(&app, (callback_res_t)hello3);
+    //HL_free(&app);
+    
+    // int ind = HL_Register_Callback(&app, Index);
+    // int ind2 = HL_Register_Callback(&app, (callback_res_t)hello2);
+    // int ind3 = HL_Register_Callback(&app, (callback_res_t)hello3);
 
-//    HL_Get(&app, "/user", exmp);
+    // HL_Get(&app, "/user", exmp);
 
-    Res res1 = HL_Get_Callback(app, ind)();
-    Res res2 = HL_Get_Callback(app, ind2)();
-    Res res3 = HL_Get_Callback(app, ind3)();
+    Req ex = (Req){"POST", "/user",3, (struct Header){{"Host:", "Accept-Language:"}, {"127.0.0.1", "EN"}, 3}};
 
-    char* string = HL_Format("AYEO %s hello\n", res1.res);
+    // Res res1 = HL_Get_Callback(app, ind)(ex);
+    // Res res2 = HL_Get_Callback(app, ind2)(ex);
+    // Res res3 = HL_Get_Callback(app, ind3)(ex);
 
-    log(string);
+    // char* string = HL_Format("FORMAT STRING %s", res1.res);
 
-    log(res1.res);
+    // log(string);
 
-    log(res2.res); // NULL
-    log(res3.res); // NULL
+    // log(res1.res);
+
+    // log(res2.res); // NULL
+    // log(res3.res); // NULL
 
     HL_Get(&app, "/", Index);
+    HL_Get(&app, "/route", Route);
 
-    char tst[20];
+    // sm_get(app.routes, "GET /", tst, sizeof(tst));
 
-    sm_get(app.routes, "/", tst, 2);
+    // int yum = atoi(tst);
 
-    log(HL_Format("sm_get return -> %s", tst));
+    // Res test = HL_Get_Callback(app, yum)(ex);
 
-    int yum = atoi(tst);
-
-    log(HL_Format("yum = %d", yum));
-
-    Res test = HL_Get_Callback(app, yum)();
-
-    log(HL_Format("RES: %s STATUS: %d", test.res, test.status));
+    // log(HL_Format("RES: %s STATUS: %d", test.res, test.status));
 
     HL_Listen(&app);
-
-    //HL_free(&app);
     
     exit(EXIT_SUCCESS);
 }
