@@ -16,8 +16,6 @@ typedef struct { \
 } NAME;
 
 HL_DEFINE_RESULT(uint8_t, uint8_t, Resu8);
-HL_DEFINE_RESULT(uint16_t, uint16_t, Resu16);
-HL_DEFINE_RESULT(uint32_t, uint32_t, Resu32);
 HL_DEFINE_RESULT(uint8_t, char*, ResStrErr);
 HL_DEFINE_RESULT(char*, char*, ResStr);
 HL_DEFINE_RESULT(char*, uint8_t, Resu8Err);
