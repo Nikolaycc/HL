@@ -30,7 +30,7 @@ int main(void) {
     HL app;
     HL_Default(&app);
 
-    HL_CreateServer(&app, "127.0.0.1", 8000);
+    HL_CreateServer(&app, "127.0.0.1", 8001);
     
     //HL_free(&app);
     

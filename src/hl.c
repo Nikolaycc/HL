@@ -57,7 +57,7 @@ Result HL_Put(HL* h, const char* route, Res (callback)()) {
 void HL_Listen(HL* h) {
     struct sockaddr_in clitmp = {0};
 
-    if (listen(h->sfd, 10) == -1) {
+    if  (listen(h->sfd, 10) == -1) {
         panic("listen");
     }
 
@@ -108,7 +108,7 @@ Res NotFound(Req r) {
 
 Res HL_Check_Route(const HL *h, Req r) {
     char *tst;
-    if (sm_exists(h->routes, HL_Format("%s %s", r.method, r.route))) {
+    if (!sm_exists(h->routes, HL_Format("%s %s", r.method, r.route))) {
         sm_get(h->routes, HL_Format("%s %s", r.method, r.route), tst, sizeof(tst));
     } else {
         tst = "404";
