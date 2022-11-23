@@ -6,6 +6,9 @@
 #include <stdint.h>
 #include <string.h>
 
+#define Ok 0
+#define Err 1
+
 #define HL_DEFINE_RESULT(T, E, NAME) \
 typedef struct { \
   uint8_t success; \
@@ -37,7 +40,7 @@ void HL_Router_New(HL_Router*);
 void HL_Router_Clear(HL_Router*);
 void HL_Router_Realloc(HL_Router*, uint16_t);
 
-Resu8Err HL_Router_Get(const HL_Router*, const char*);
-Resu8 HL_Router_Put(HL_Router*, const char*, CallBackIdx);
+Resu8 HL_Router_Get(const HL_Router*, const char*);
+Resu8Err HL_Router_Put(HL_Router*, const char*, CallBackIdx);
 
 #endif
