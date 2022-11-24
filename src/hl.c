@@ -1,11 +1,10 @@
 #include "hl.h"
+#include <stdint.h>
 
 void HL_Default(HL* h) {
     h->sfd = 2;
     h->ser_len = 1;
-    h->routes = sm_new(MAX_ROUTES);
-    if (h->routes == NULL)
-       panic("routes == NULL");
+    HL_Router_New(&h->routes);
 }
 
 Result HL_CreateServer(HL* h, const char* ip, int port) {
@@ -13,12 +12,12 @@ Result HL_CreateServer(HL* h, const char* ip, int port) {
     socktmp.sin_family = AF_INET;
     socktmp.sin_port = htons(port);
     inet_aton(ip, (struct in_addr*)&socktmp.sin_addr.s_addr);
-    
+
     h->sfd = socket(AF_INET, SOCK_STREAM, 0);
     if (0 > h->sfd)
        panic("| [NULL] Socket Error");
 
-    
+
     if (0 > bind(h->sfd, (struct sockaddr*)&socktmp, sizeof(socktmp)))
        panic("| [NULL] Bind Error");
 
@@ -27,29 +26,29 @@ Result HL_CreateServer(HL* h, const char* ip, int port) {
 }
 
 Result HL_Get(HL* h, const char* route, Res (callback)()) {
-    int i = HL_Register_Callback(h, callback);
-    sm_put(h->routes, HL_Format("GET %s", route), HL_Format("%d", i));
+    uint16_t i = HL_Register_Callback(h, callback);
+    HL_Router_Put(&h->routes, route, i);
 
     return Ok;
 }
 
 Result HL_Post(HL* h, const char* route, Res (callback)()) {
-    int i = HL_Register_Callback(h, callback);
-    sm_put(h->routes, HL_Format("POST %s", route), HL_Format("%d", i));    
-    
+    uint16_t i = HL_Register_Callback(h, callback);
+    HL_Router_Put(&h->routes, route, i);
+
     return Ok;
 }
 
 Result HL_Delete(HL* h, const char* route, Res (callback)()) {
-    int i = HL_Register_Callback(h, callback);
-    sm_put(h->routes, HL_Format("DELETE %s", route), HL_Format("%d", i));
+    uint16_t i = HL_Register_Callback(h, callback);
+    HL_Router_Put(&h->routes, route, i);
 
     return Ok;
 }
 
 Result HL_Put(HL* h, const char* route, Res (callback)()) {
-    int i = HL_Register_Callback(h, callback);
-    sm_put(h->routes, HL_Format("PUT %s", route), HL_Format("%d", i));
+    uint16_t i = HL_Register_Callback(h, callback);
+    HL_Router_Put(&h->routes, route, i);
 
     return Ok;
 }
@@ -63,7 +62,7 @@ void HL_Listen(HL* h) {
 
     socklen_t siz = sizeof(clitmp);
     h->lsnb = 1;
-    
+
     while(h->lsnb) {
         log("(Waiting for new connection..)");
 
@@ -79,14 +78,14 @@ void HL_Listen(HL* h) {
             reqllp = HL_Parse_Req(h->buffer);
             log(HL_Format("(Req) Method: %s Route: %s Size: %d", reqllp.method, reqllp.route, reqllp.size));
             Res resllp = HL_Check_Route(h, reqllp);
-            char* exm = HL_Format("HTTP/1.1 %d ok\nContent-Type: text/html\nContent-Length: 20\n\n%s", resllp.status, resllp.res);
+            char* exm = HL_Format("HTTP/1.1 %d Not Found\nContent-Type: text/html\nContent-Length: 20\n\n%s", resllp.status, resllp.res);
             log(HL_Format("(Res) %s\n", exm));
             send(h->cfd, exm, strlen(exm), 0);
         }
         else if (rtmp == 0) {
             log("connection closing...");
         } else {
-            close(h->cfd);           
+            close(h->cfd);
         }
     }
 }
@@ -98,7 +97,7 @@ Req HL_Parse_Req(char *bufsr) {
         buftmp[ind] = ptr;
 		ptr = strtok(NULL, WSPACE); ind++;
     }
-    
+
     return (Req){buftmp[0], buftmp[1], ind-1, (struct Header){{"Host:", "Accept-Language:"}, {"127.0.0.1", "EN"}, 3}};
 }
 
@@ -107,20 +106,17 @@ Res NotFound(Req r) {
 }
 
 Res HL_Check_Route(const HL *h, Req r) {
-    char *tst;
-    if (!sm_exists(h->routes, HL_Format("%s %s", r.method, r.route))) {
-        sm_get(h->routes, HL_Format("%s %s", r.method, r.route), tst, sizeof(tst));
+    Resu8 tst = HL_Router_Get(&h->routes, r.route);
+    Res res;
+
+    if (tst.success != Err) {
+        res = HL_Get_Callback(h, tst.result)(r);
     } else {
-        tst = "404";
+        res = NotFound(r);
     }
-    log(HL_Format("TST = %s", tst));
-    if (strcmp(tst, "404")) {
-        log("ret notf");
-        return NotFound(r);
-    }
-    log("next");
-    Res res = HL_Get_Callback(h, atoi(tst))(r);
-    log("res ret");
+
+    printf("\tDEBUG %s %d idx: %d %s\n", res.res, res.status, tst.result, r.route);
+
     return res;
 }
 

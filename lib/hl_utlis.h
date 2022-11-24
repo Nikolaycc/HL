@@ -6,8 +6,41 @@
 #include <stdint.h>
 #include <string.h>
 
-#define Ok 0
-#define Err 1
+#define panic(_msg_) { \
+    time_t t = time(NULL); \
+    struct tm tm = *localtime(&t); \
+    fprintf(stderr, "panic: [%02d:%02d:%02d] (%s:%d)\n    ->\t %s\n", tm.tm_hour, tm.tm_min, tm.tm_sec, __FILE__, __LINE__, (_msg_)); \
+    exit(1); \
+}
+
+#define log(_msg_) {\
+    time_t t = time(NULL); \
+    struct tm tm = *localtime(&t); \
+    fprintf(stdout, "log: [%02d:%02d:%02d] (%s:%d)\n    ->\t %s\n", tm.tm_hour, tm.tm_min, tm.tm_sec, __FILE__, __LINE__, (_msg_)); \
+}
+
+#define MAX_ROUTES 125
+#define MAX_SIZE 257
+#define MAX_BUFFER_SIZE 1025
+#define MAX_HEAD 30
+#define DEFAULT_HEAD 10
+#define MAX_TEXT_BUFFER_LENGTH 1024
+#define MAX_TEXTFORMAT_BUFFERS 4
+#define MAX_REQ_SIZE 35
+
+#define HTTPV 1.1
+
+#define WSPACE " "
+#define NLINE "\n"
+
+#define ERR 1
+#define OK 0
+
+typedef enum {
+    Err = ERR,
+    Ok = OK,
+} Result;
+
 
 #define HL_DEFINE_RESULT(T, E, NAME) \
 typedef struct { \
@@ -38,7 +71,6 @@ typedef struct {
 
 void HL_Router_New(HL_Router*);
 void HL_Router_Clear(HL_Router*);
-void HL_Router_Realloc(HL_Router*, uint16_t);
 
 Resu8 HL_Router_Get(const HL_Router*, const char*);
 Resu8 HL_Router_Put(HL_Router*, const char*, CallBackIdx);
