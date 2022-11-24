@@ -41,6 +41,6 @@ void HL_Router_Clear(HL_Router*);
 void HL_Router_Realloc(HL_Router*, uint16_t);
 
 Resu8 HL_Router_Get(const HL_Router*, const char*);
-Resu8Err HL_Router_Put(HL_Router*, const char*, CallBackIdx);
+Resu8 HL_Router_Put(HL_Router*, const char*, CallBackIdx);
 
 #endif
